@@ -7,6 +7,7 @@ def connect():
     conn = sqlite3.connect("algodistro.db")
     cur = conn.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS useremail (id INTEGER PRIMARY KEY, username text, email text)")
+    cur.execute("CREATE TABLE IF NOT EXISTS serverlog (id INTEGER PRIMARY KEY, servername text, deploydatetime text)")
     conn.commit()
     conn.close
     return
@@ -18,6 +19,15 @@ def insert(username, email):
     cur = conn.cursor()
     # NULL is to pass the random 'id' INTEGER PRIMARY KEY
     cur.execute("INSERT INTO useremail VALUES (NULL, ?, ?)", (username, email)) 
+    conn.commit()
+    conn.close
+    return
+
+def log_datetime(servername, deploydatetime):
+    conn = sqlite3.connect("algodistro.db")
+    cur = conn.cursor()
+    # NULL is to pass the random 'id' INTEGER PRIMARY KEY
+    cur.execute("INSERT INTO serverlog VALUES (NULL, ?, ?)", (servername, deploydatetime)) 
     conn.commit()
     conn.close
     return

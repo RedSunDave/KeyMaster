@@ -1,4 +1,4 @@
-#!usr/bin/python3
+#!.venv/bin/python3
 
 """
 Code Written by David Foran - Red Sun Information Systems Corporation
@@ -7,22 +7,23 @@ Code written in Python 3.6.9 according to PEP8 Standards. GDrive API Engine
 supports various functions needed to support and interact with the GDrive API v3.
 
 In order for the code to work you do need a Credential File which can be obtained
-by enabling the 
+by enabling the Drive API:
 
  - Drive API (https://developers.google.com/drive/api/v3/quickstart/python)
 
 and obtaining oauth2client credentials from here:
 
  - https://console.developers.google.com/apis/credentials
- 
+
 Notes on oauth are here
 
  - https://developers.google.com/identity/protocols/oauth2
- 
+
 These credentials should be placed into the administrative folder.
 """
 
-import glob, os, shutil, re
+import glob
+import os
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -52,13 +53,13 @@ def read_all_folders(gdrive_instance, folder_name):
     Reads all of the folders within the drive and prints them to CLI.
     """
     parent_folder_id = get_folder_id(gdrive_instance, folder_name)
-    page_token=None
+    page_token = None
     while True:
         response = gdrive_instance.files().list(q="mimeType = 'application/vnd.google-apps.folder'and parents in '{}'".format(parent_folder_id),
                                                 spaces='drive',
                                                 fields='nextPageToken, files(id, name)',
                                                 pageToken=page_token).execute()
-        
+
         page_token = response.get('nextPageToken', None)
         if page_token is None:
             break
@@ -91,7 +92,7 @@ def create_folder(gdrive_instance, folder_name, parent_folder):
     """
     Create a folder, 'parent_folder_id' is the id of the folder
     that we are creating a folder inside of. 'folder_name' is the
-    name that we will pass to our folder. 'mimeType' is the type of 
+    name that we will pass to our folder. 'mimeType' is the type of
     object we are passing to be created. 'mimeType' must come before
     'parents' in the parameters.
     """
@@ -101,20 +102,20 @@ def create_folder(gdrive_instance, folder_name, parent_folder):
     folder_parameters = {'name': folder_name,
                          'mimeType': 'application/vnd.google-apps.folder',
                          'parents': [parent_folder_id]
-    }
+                        }
 
     gdrive_instance.files().create(body=folder_parameters).execute()
 
 def create_escrow_folder(gdrive_instance, folder_name):
     """
-    Create a folder, 'folder_name' is the name that we will pass to 
-    our folder. 'mimeType' is the type of object we are passing to 
+    Create a folder, 'folder_name' is the name that we will pass to
+    our folder. 'mimeType' is the type of object we are passing to
     be created. 'mimeType' must come before 'parents' in the parameters.
     Creates the folder in the main drive.
     """
     folder_parameters = {'name': folder_name,
                          'mimeType': 'application/vnd.google-apps.folder'
-    }
+                        }
 
     gdrive_instance.files().create(body=folder_parameters).execute()
 
@@ -128,15 +129,19 @@ def upload_file(gdrive_instance, file_name, filepath, parent_folder):
     # mimetype is usually a variable in MediaFileUpload, but was
     # not included so that it would work with pictures and text
     media = MediaFileUpload(
-                filepath, 
+                filepath,
                 resumable=True
                 )
-    
+
     gdrive_instance.files().create(body=file_parameters,
                                    media_body=media,
                                    fields='id').execute()
 
 def delete_files(gdrive_instance, file_name, folder_name):
+    """
+    This folder will get all of the files within a specifice folder and delete
+    them from the folder.
+    """
     # example: List files
     folder_id = get_folder_id(gdrive_instance, folder_name)
     results = gdrive_instance.files().list(q="name contains '{}' and parents in '{}'".format(file_name, folder_id),
@@ -190,8 +195,8 @@ def delete_folder_permissions(gdrive_instance, folder_name):
 
 def share_folder(gdrive_instance, folder_name, email):
     """
-    This function uses a folder name and email to share it with 
-    the user associated with the email address. 
+    This function uses a folder name and email to share it with
+    the user associated with the email address.
     """
     folder_id = get_folder_id(gdrive_instance, folder_name)
     batch = gdrive_instance.new_batch_http_request(callback=callback)
@@ -210,10 +215,13 @@ def share_folder(gdrive_instance, folder_name, email):
     print("Folder id: '{}' and folder name: '{}' shared with email address: '{}'!".format(folder_id, folder_name, email[0]))
     batch.execute()
 
-def synchronize_folders_to_GDrive(gdrive_instance, escrowpath):
+def synchronize_folders_to_gdrive(gdrive_instance, escrowpath):
+    """
+    Syncronizeds all folders from local escrow folder to the gdrive folder
+    """
     local_folder_list = glob.glob(escrowpath + "*")
     # gdrive_folder_list = read_all_folders(gdrive_instance, 'escrow')
-    
+
     for _folder in local_folder_list:
         folder_name = os.path.basename(_folder)
         fid = get_folder_id(gdrive_instance, folder_name)
@@ -230,8 +238,8 @@ def synchronize_folders_to_GDrive(gdrive_instance, escrowpath):
         print("File Path is {}".format(file_path))
 
         # Clean out folder before uploading new keys
-        delete_files(gdrive_instance, folder_name, folder_name) 
-        
+        delete_files(gdrive_instance, folder_name, folder_name)
+
         # Upload new QR Key file to the appropriate folder
         qr_key_path = glob.glob(file_path + "*.png")
         qr_key_name = folder_name + ".png"
@@ -249,4 +257,3 @@ def synchronize_folders_to_GDrive(gdrive_instance, escrowpath):
 
     print("Finished GDrive Folder Synchronization")
     return
-

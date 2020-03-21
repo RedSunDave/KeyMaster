@@ -1,12 +1,12 @@
-#!usr/bin/python3
+#!.venv/bin/python3
 
 """
 Code Written by David Foran - Red Sun Information Systems Corporation
 
-Code written in Python 3.6.9 according to PEP8 Standards. This code is 
-a simple set up scripts that copy your Algo QR Keys/Config files for 
-wireguard and transfer them into your 'escrow' folder and creating and 
-moving them into a folder for each user. 
+Code written in Python 3.6.9 according to PEP8 Standards. This code is
+a simple set up scripts that copy your Algo QR Keys/Config files for
+wireguard and transfer them into your 'escrow' folder and creating and
+moving them into a folder for each user.
 """
 
 import glob, os, shutil, re
@@ -28,17 +28,17 @@ def copy_keys(algopath, escrowpath):
         configname = get_username_from_configuration(_file)
         print('Config File Username: {}/'.format(configname))
         configfolder = os.path.join(escrowpath, configname)
-        
-        if os.path.isdir(configfolder) == True:
+
+        if os.path.isdir(configfolder) is True:
             print("{} found, copying!".format(configfolder))
         else:
             os.mkdir(configfolder)
             print("Folder Created: {}".format(configfolder))
-            
+
 
         shutil.copy(_file, configfolder)
         print("{}'s config file was copied to {}".format(configname, configfolder))
-    
+
     # Loop through all key files and add them to user folders
     for _key in qr_key_list:
         key_owner = get_username_from_qrcode(_key)
@@ -50,12 +50,10 @@ def copy_keys(algopath, escrowpath):
 
 def get_username_from_configuration(string):
     """ Uses Regex to pull the user's name off of the Config file filepath """
-    username = re.sub(r'((?:/home).*wireguard/)|(?:.conf)', "",string, flags=re.I)
+    username = re.sub(r'((?:/home).*wireguard/)|(?:.conf)', "", string, flags=re.I)
     return username
 
 def get_username_from_qrcode(string):
     """ Uses Regex to pull the user's name off of the QR Code filepath """
-    username = re.sub(r'((?:/home).*wireguard/)|(?:.png)', "",string, flags=re.I)
+    username = re.sub(r'((?:/home).*wireguard/)|(?:.png)', "", string, flags=re.I)
     return username
-
-
