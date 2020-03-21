@@ -30,7 +30,9 @@ Then, download the credentials from the popup:
 
 ![image](images/downloadcreds.png)
 
-These credentials should be placed into the 'administrative' folder located under the main application folder. There are dummy files located in the administrative folder for show. Rename the credentials you downloaded "client_secrets.json" then you can move on and begin using the program.
+These credentials should be placed into the 'administrative' folder located under the main application folder. There are dummy files located in the administrative folder for show. Rename the credentials you downloaded "client_secrets.json".
+
+Finally, you will need to download an API key from DigitalOcean (suport for AWS coming soon). Add the keystring into 'administrative/cloud_token.txt' file, and then you can move on and begin using the program.
 
 The command to run the program is:
 
