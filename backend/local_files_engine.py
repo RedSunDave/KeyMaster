@@ -9,7 +9,10 @@ wireguard and transfer them into your 'escrow' folder and creating and
 moving them into a folder for each user.
 """
 
-import glob, os, shutil, re
+import glob
+import os
+import shutil
+import re
 
 def copy_keys(algopath, escrowpath):
     """

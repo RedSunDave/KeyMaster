@@ -14,7 +14,7 @@ import time
 import sys
 
 import backend.database_engine as db
-from backend.keymaster_art import art, print_keymaster_art
+from backend.keymaster_art import ART, print_keymaster_art
 from backend.deploy_algo_engine import deploy_algo_server, get_digitalocean_cloud_token
 from backend.local_files_engine import copy_keys
 from backend.gdrive_api_engine import create_gdrive_api_instance, delete_folder_permissions, create_escrow_folder, get_folder_id, synchronize_folders_to_gdrive
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     GDRIVE_ESCROW = "escrow"
     DRIVE = create_gdrive_api_instance()
 
-    print_keymaster_art(art)
+    print_keymaster_art(ART)
     print("\n intializing program..... \n")
     time.sleep(3)
 

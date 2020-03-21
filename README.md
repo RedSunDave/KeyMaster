@@ -12,21 +12,11 @@ This code is to be used in conjunction with Algo/Wireguard. The Code to get an A
 
 ### Setting Up Python Environment
 
-As usual, I recommend you first clone this repository and set up a Virtual Environment and enter into it with a set of commands like:
+As usual, I recommend you first clone this repository with a set of commands like:
 
-    git clone <url>
+    git clone https://github.com/RedSunDave/KeyMaster
 
-    python3 -m venv <environment name>
-
-    source <environment name>/bin/activate
-
-You'll need to install the required python3 modules.
-
-Using pip3 for python3. Upon activating your environment run:
-
-    pip3 install -r requirements.txt
-
-Finally, you will have to activate your gsuite account.
+Second, you will have to activate your gsuite account.
 
 In order for the code to work you do need a Credential File which can be obtained by going to the following link:
 
@@ -40,13 +30,25 @@ Then, download the credentials from the popup:
 
 ![image](images/downloadcreds.png)
 
-These credentials should be placed into the administrative folder. There are dummy files located in the administrative folder for show. Rename the credentials "client_secrets.json" then you can move on and begin using the program.
+These credentials should be placed into the 'administrative' folder located under the main application folder. There are dummy files located in the administrative folder for show. Rename the credentials you downloaded "client_secrets.json" then you can move on and begin using the program.
 
 The command to run the program is:
 
     python3 distribute_keys.py
 
-Note that once distribution begins, you'll need to add emails for all new users that are getting added to the list. If the program detects keys uploaded for a username that doesn't currently exist, it will prompt you for their email. All username / email keypairs are stored locally in an sqlite3 database.
+Upon your first use, the program will download 'algo' into your backend folder. Don't forget to edit the 'config.cfg' folder in the '/backend/algo/' directory. You can add users at the top of the config form as pictured below:
+
+![image](images/algo_config.png)
+
+If you run the program again, it will install all the necessary python modules as well as set up your virtual environment!
+
+Note that the first time distribution begins, you'll be prompted to add emails for all new users that are getting added to the list. If the program detects keys uploaded for a username that doesn't currently exist, it will prompt you for their email. All username / email keypairs are stored locally in an sqlite3 database.
+
+If you want an easy way to view the Sqlite3 database through a gui, I highly recommend [DB Browser For SQLite](https://sqlitebrowser.org/)
+
+### Other Cool Ideas
+
+If you want your own VPN Delivery Machine, install this program on a Raspberry Pi Board. After finishing the initial setup, you can set it to run cronjobs so that you get a new VPN every x number of days. Please reach out with any other cool ideas!
 
 ## Authors
 

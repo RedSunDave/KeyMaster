@@ -9,7 +9,7 @@ Please ensure your 'client_secrets.json' file is located in your 'administrative
 folder. See the README for more information.
 
 """
-art = """\n
+ART = """\n
  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 |     ___________                                           _____________     |
 |    /     _     \                                         /      _      \    |

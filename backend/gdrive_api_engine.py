@@ -233,7 +233,6 @@ def synchronize_folders_to_gdrive(gdrive_instance, escrowpath):
             print("Domain access permissions for Folder: {} removed".format(folder_name))
         elif fid is not None:
             print("Folder '{}' already exists".format(folder_name))
-            pass
         file_path = _folder + "/"
         print("File Path is {}".format(file_path))
 

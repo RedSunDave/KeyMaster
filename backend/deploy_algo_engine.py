@@ -2,12 +2,19 @@
 """
 Code Written by David Foran - Red Sun Information Systems Corporation
 
-Code written in Python 3.6.9 according to PEP8 Standards. This code is 
+Code written in Python 3.6.9 according to PEP8 Standards. This code is
 a pexcept script that copies your cloud key and then orchestrates the
 deployment of Algo VPN into the cloud.
 """
 
-import pexpect, datetime, time, os, glob, shutil, uuid
+import datetime
+import time
+import os
+import glob
+import shutil
+import uuid
+import pexpect
+
 import backend.database_engine as db
 
 
@@ -52,15 +59,15 @@ def delete_old_server_folders():
         try:
             shutil.rmtree(media)
             print("{} deleted successfully!".format(media))
-        except OSError as e:
-            print("Not Deleting: {} : {}".format(media, e.strerror))
+        except OSError as _error:
+            print("Not Deleting: {} : {}".format(media, _error.strerror))
 
 def deploy_algo_server(api_token):
     """
     Controlling applications with pexpect is a create mechanism for
     orchestration and automation. Start by 'spawning' the algo application,
-    'expect' the questions, and then 'sendline' the command that you want 
-    to execute. I found allowing a pause in between expect and sendline 
+    'expect' the questions, and then 'sendline' the command that you want
+    to execute. I found allowing a pause in between expect and sendline
     helps with making sure the program executes correctly.
     """
 
@@ -86,7 +93,8 @@ def deploy_algo_server(api_token):
     algo_server_id = get_server_id()
     child.sendline(algo_server_id)
 
-    # Do you want macOS/iOS clients to enable "Connect On Demand" when connected to cellular networks?
+    # Do you want macOS/iOS clients to enable "Connect On Demand" when
+    # connected to cellular networks?
     print("Allow macOS/iOS clients to enable connect on demand to cellphone networks")
     child.expect('[y/N]')
     time.sleep(5)
@@ -98,12 +106,14 @@ def deploy_algo_server(api_token):
     time.sleep(5)
     child.sendline('N')
 
-    # # List the names of any trusted Wi-Fi networks where macOS/iOS clients should not use "Connect On Demand"
+    # List the names of any trusted Wi-Fi networks where
+    # macOS/iOS clients should not use "Connect On Demand"
     # print("Entering Names of any trusted networks")
     # child.expect('HomeNet,OfficeWifi,AlgoWiFi')
     # child.sendline('None')
 
-    # Do you want to retain the keys (PKI)? (required to add users in the future, but less secure)?
+    # Do you want to retain the keys (PKI)? (required to add
+    # users in the future, but less secure)?
     print("Don't retain PKI keys")
     child.expect('[y/N]')
     time.sleep(5)
@@ -134,7 +144,8 @@ def deploy_algo_server(api_token):
     child.sendline("6")
 
     algo_server_timestamp = get_timestamp()
-    print("Server {} activated on {}, finishing installation".format(algo_server_id, algo_server_timestamp))
+    print("Server {} activated on {}, finishing installation".format(algo_server_id,
+                                                                     algo_server_timestamp))
 
     # It normally takes around 7min-10min seconds to setup a server
     # I give it 15 min just in case
@@ -142,5 +153,5 @@ def deploy_algo_server(api_token):
 
     os.chdir("../..")
     # Log the deployment of the server in the database
- 
+
     db.log_datetime(algo_server_id, algo_server_timestamp)
