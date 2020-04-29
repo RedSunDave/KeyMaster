@@ -152,6 +152,6 @@ def deploy_algo_server(api_token):
     time.sleep(60*15)
 
     os.chdir("../..")
-    # Log the deployment of the server in the database
 
+    # Log the deployment of the server in the database
     db.log_datetime(algo_server_id, algo_server_timestamp)

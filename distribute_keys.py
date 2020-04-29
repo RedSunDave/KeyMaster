@@ -28,7 +28,9 @@ if __name__ == "__main__":
     ESCROW = os.getcwd() + "/escrow/"
     CLOUD_TOKEN_PATH = os.getcwd() + "/administrative/cloud_token.txt"
     GDRIVE_ESCROW = "escrow"
+    GDRIVE_MANIFEST = "manifest"
     DRIVE = create_gdrive_api_instance()
+    SHEETS = create_sheets_api_instance()
 
     print_keymaster_art(ART)
     print("\n intializing program..... \n")
@@ -47,7 +49,7 @@ if __name__ == "__main__":
 
     print("Checking for Algo Folder")
     time.sleep(3)
-    if os.path.isdir('backend/algo/') is True:
+    if os.path.isdir('backend/algo/configs/') is True:
         print("Algo folder exists")
         time.sleep(3)
     else:

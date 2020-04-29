@@ -31,11 +31,27 @@ from httplib2 import Http
 from oauth2client import file as oauth2file, client, tools
 import backend.database_engine as db
 
-SCOPES = 'https://www.googleapis.com/auth/drive'
-CREDENTIAL_FILE = 'administrative/client_secrets.json'
-TOKEN_FILE = 'administrative/gdrive_sync_token.json'
+GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive'
+GDRIVE_CREDENTIAL_FILE = 'administrative/client_secrets.json'
+GDRIVE_TOKEN_FILE = 'administrative/gdrive_sync_token.json'
+SHEETS_SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
+SHEETS_CREDENTIAL_FILE = 'administrative/sheets_client_secrets.json'
+SHEETS_TOKEN_FILE = 'administrative/sheets_token.json'
 
 def create_gdrive_api_instance():
+    """
+    Synchronizes the folder by building an instance of GDrive API
+    and then connecting, reading through folders, and printing them out.
+    """
+    store = oauth2file.Storage(GDRIVE_TOKEN_FILE)
+    creds = store.get()
+    if not creds or creds.invalid:
+        flow = client.flow_from_clientsecrets(GDRIVE_CREDENTIAL_FILE, GDRIVE_SCOPES)
+        creds = tools.run_flow(flow, store)
+    gdrive_instance = build('drive', 'v3', http=creds.authorize(Http()))
+    return gdrive_instance
+
+def create_sheets_api_instance():
     """
     Synchronizes the folder by building an instance of GDrive API
     and then connecting, reading through folders, and printing them out.
@@ -45,8 +61,88 @@ def create_gdrive_api_instance():
     if not creds or creds.invalid:
         flow = client.flow_from_clientsecrets(CREDENTIAL_FILE, SCOPES)
         creds = tools.run_flow(flow, store)
-    gdrive_instance = build('drive', 'v3', http=creds.authorize(Http()))
-    return gdrive_instance
+    sheets_api_instance = build('sheets', 'v4', http=creds.authorize(Http()))
+    return sheets_api_instance
+
+def read_spreadsheet(sheets_api_instance):
+    """
+    Reads a spreadsheet in the gdrive to pull information down into a manifest
+    object. The manifest (basically a list of people needing vpn access) helps
+    to determine deployment date of the vpn, destruction date of vpn, users, and
+    their associated emails.
+    """
+    sheet = sheets_api_instance.spreadsheets()
+    date_start = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+                                range='A2:A').execute()
+    date_end = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+                                range='B2:B').execute()
+    personnel = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+                                range='C2:C').execute()
+    emails = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+                                range='D2:D').execute()
+
+    date_start = date_start.get('values', [])
+    date_end = date_end.get('values', [])
+    personnel_list = personnel.get('values', [])
+    email_list = emails.get('values', [])
+
+    return date_start, date_end, personnel_list, email_list
+
+def add_manifest_personnel_to_algo_config(manifest, filepath):
+    """
+    This uses the manifest data pulled from 'read_spreadsheets' in order to
+    edit the algo configuration file in backend/algo/config.cfg to create
+    deploy the appropriate users with the algo server
+    """
+    config_file = open("backend/algo/config.cfg", mode="r")
+    string_list = config_file.readlines()
+    
+    delete_lines_start = get_line_number_start(filepath)
+    delete_lines_end = get_line_number_end(filepath)
+
+    del string_list[delete_lines_start:delete_lines_end]
+
+    personnel_list = []
+
+    for person in manifest[2]:
+        personnel_list.append(person[0])
+
+    user_list = "".join(map(lambda x: '  - '+str(x)+'\n', personnel_list))
+    string_list[8] = user_list
+    config_file = open("backend/algo/config.cfg", "w")
+    new_config_file_contents = "".join(string_list)
+    config_file.write(new_config_file_contents)
+    config_file.close()
+
+def get_line_number_end(filepath):
+    """
+    Grabs the last line that needs to be replaced to add users automatically
+    to the configuration file. This is the line before "### Review these options"
+    """
+    config_file = open(filepath, mode="r")
+    text_match = "### Review these options"
+    num = 0
+    for line in config_file:
+        num += 1
+        if text_match in line:
+            line_number_end = num - 2
+
+    return line_number_end
+
+def get_line_number_start(filepath):
+    """
+    Grabs the first line that needs to be replaced to add users automatically
+    to the configuration file. This is the line after "users:
+    """
+    config_file = open(filepath, mode="r")
+    text_match = "users:"
+    num = 0
+    for line in config_file:
+        num += 1
+        if text_match in line:
+            line_number_start = num
+
+    return line_number_start
 
 def read_all_folders(gdrive_instance, folder_name):
     """
