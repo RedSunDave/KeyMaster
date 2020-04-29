@@ -32,7 +32,7 @@ from oauth2client import file as oauth2file, client, tools
 import backend.database_engine as db
 
 GDRIVE_SCOPES = 'https://www.googleapis.com/auth/drive'
-GDRIVE_CREDENTIAL_FILE = 'administrative/client_secrets.json'
+GDRIVE_CREDENTIAL_FILE = 'administrative/gdrive_client_secrets.json'
 GDRIVE_TOKEN_FILE = 'administrative/gdrive_sync_token.json'
 SHEETS_SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
 SHEETS_CREDENTIAL_FILE = 'administrative/sheets_client_secrets.json'
