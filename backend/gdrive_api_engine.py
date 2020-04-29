@@ -56,10 +56,10 @@ def create_sheets_api_instance():
     Synchronizes the folder by building an instance of GDrive API
     and then connecting, reading through folders, and printing them out.
     """
-    store = oauth2file.Storage(TOKEN_FILE)
+    store = oauth2file.Storage(SHEETS_TOKEN_FILE)
     creds = store.get()
     if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets(CREDENTIAL_FILE, SCOPES)
+        flow = client.flow_from_clientsecrets(SHEETS_CREDENTIAL_FILE, SCOPES)
         creds = tools.run_flow(flow, store)
     sheets_api_instance = build('sheets', 'v4', http=creds.authorize(Http()))
     return sheets_api_instance
