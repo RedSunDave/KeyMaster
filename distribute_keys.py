@@ -53,8 +53,9 @@ if __name__ == "__main__":
         print("Algo folder exists")
         time.sleep(3)
     else:
-        os.system('cd backend/')
+        os.chdir("backend/")
         os.system('git clone https://github.com/trailofbits/algo.git')
+        os.chdir("..")
         print('Edit the users in the Algo configuration file! Then run "python3 distribute_keys.py" again')
         time.sleep(3)
         sys.exit(0)
