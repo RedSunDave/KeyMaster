@@ -12,6 +12,7 @@ folder. See the README for more information.
 import os
 import time
 import sys
+import shutil
 
 import backend.database_engine as db
 from backend.keymaster_art import ART, print_keymaster_art
@@ -54,6 +55,7 @@ if __name__ == "__main__":
         time.sleep(3)
     else:
         os.chdir("backend/")
+        shutil.rmtree('algo/')
         os.system('git clone https://github.com/trailofbits/algo.git')
         os.chdir("..")
         print('Edit the users in the Algo configuration file! Then run "python3 distribute_keys.py" again')
