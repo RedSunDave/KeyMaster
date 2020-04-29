@@ -17,7 +17,7 @@ import backend.database_engine as db
 from backend.keymaster_art import ART, print_keymaster_art
 from backend.deploy_algo_engine import deploy_algo_server, get_digitalocean_cloud_token
 from backend.local_files_engine import copy_keys
-from backend.gdrive_api_engine import create_gdrive_api_instance, delete_folder_permissions, create_escrow_folder, get_folder_id, synchronize_folders_to_gdrive
+from backend.gdrive_api_engine import create_gdrive_api_instance, create_sheets_api_instance, delete_folder_permissions, create_escrow_folder, get_folder_id, synchronize_folders_to_gdrive
 
 
 if __name__ == "__main__":
