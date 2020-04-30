@@ -64,7 +64,7 @@ def create_sheets_api_instance():
     sheets_api_instance = build('sheets', 'v4', http=creds.authorize(Http()))
     return sheets_api_instance
 
-def read_spreadsheet(sheets_api_instance):
+def read_spreadsheet(sheets_api_instance, manifest_id):
     """
     Reads a spreadsheet in the gdrive to pull information down into a manifest
     object. The manifest (basically a list of people needing vpn access) helps
@@ -72,21 +72,24 @@ def read_spreadsheet(sheets_api_instance):
     their associated emails.
     """
     sheet = sheets_api_instance.spreadsheets()
-    date_start = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+    date_start = sheet.values().get(spreadsheetId=manifest_id,
                                 range='A2:A').execute()
-    date_end = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+    date_end = sheet.values().get(spreadsheetId=manifest_id,
                                 range='B2:B').execute()
-    personnel = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+    personnel = sheet.values().get(spreadsheetId=manifest_id,
                                 range='C2:C').execute()
-    emails = sheet.values().get(spreadsheetId='1xbW9a2ruDVMSC5t6nY7ANdPD8g7fKEI7ah_RTaLeg3c',
+    usernames = sheet.values().get(spreadsheetId=manifest_id,
                                 range='D2:D').execute()
+    emails = sheet.values().get(spreadsheetId=manifest_id,
+                                range='E2:E').execute()
 
     date_start = date_start.get('values', [])
     date_end = date_end.get('values', [])
     personnel_list = personnel.get('values', [])
+    username_list = usernames.get('values', [])
     email_list = emails.get('values', [])
 
-    return date_start, date_end, personnel_list, email_list
+    return date_start, date_end, personnel_list, username_list, email_list
 
 def add_manifest_personnel_to_algo_config(manifest, filepath):
     """
@@ -94,7 +97,7 @@ def add_manifest_personnel_to_algo_config(manifest, filepath):
     edit the algo configuration file in backend/algo/config.cfg to create
     deploy the appropriate users with the algo server
     """
-    config_file = open("backend/algo/config.cfg", mode="r")
+    config_file = open(filepath, mode="r")
     string_list = config_file.readlines()
     
     delete_lines_start = get_line_number_start(filepath)
@@ -104,12 +107,12 @@ def add_manifest_personnel_to_algo_config(manifest, filepath):
 
     personnel_list = []
 
-    for person in manifest[2]:
+    for person in manifest[3]:
         personnel_list.append(person[0])
 
     user_list = "".join(map(lambda x: '  - '+str(x)+'\n', personnel_list))
     string_list[8] = user_list
-    config_file = open("backend/algo/config.cfg", "w")
+    config_file = open(filepath, "w")
     new_config_file_contents = "".join(string_list)
     config_file.write(new_config_file_contents)
     config_file.close()

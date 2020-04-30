@@ -18,7 +18,7 @@ import backend.database_engine as db
 from backend.keymaster_art import ART, print_keymaster_art
 from backend.deploy_algo_engine import deploy_algo_server, get_digitalocean_cloud_token
 from backend.local_files_engine import copy_keys
-from backend.gdrive_api_engine import create_gdrive_api_instance, create_sheets_api_instance, delete_folder_permissions, create_escrow_folder, get_folder_id, synchronize_folders_to_gdrive
+from backend.gdrive_api_engine import create_gdrive_api_instance, read_spreadsheet, add_manifest_personnel_to_algo_config, create_sheets_api_instance, delete_folder_permissions, create_escrow_folder, get_folder_id, synchronize_folders_to_gdrive
 
 
 if __name__ == "__main__":
@@ -32,7 +32,9 @@ if __name__ == "__main__":
     GDRIVE_MANIFEST = "manifest"
     DRIVE = create_gdrive_api_instance()
     SHEETS = create_sheets_api_instance()
-
+    CONFIG_PATH = os.getcwd() + "/backend/algo/config.cfg"
+    MANIFEST_ID = "Add ID of Google Sheet Manifest"
+    
     print_keymaster_art(ART)
     print("\n intializing program..... \n")
     time.sleep(3)
@@ -58,28 +60,31 @@ if __name__ == "__main__":
         shutil.rmtree('algo/')
         os.system('git clone https://github.com/trailofbits/algo.git')
         os.chdir("..")
-        print('Edit the users in the Algo configuration file! Dont forget to setup the .env folder and install requirements. Then run "python3 distribute_keys.py" again')
+        print('Edit the users in the Algo configuration file!  \nDont forget to setup the .env folder and install requirements. \nThen run "python3 distribute_keys.py" again')
         time.sleep(3)
         sys.exit(0)
 
-"""
-# This set of code needs to be fixed, the implementation to automated virtualenv doesn't work correctly.
-    # print("Checking for the Algo VPN '.env' folder...")
-    # time.sleep(2)
-    # if os.path.isdir('backend/algo/.env') is True:
-    #     print("Algo VPN '.env already exists!")
-    #     os.system('source backend/algo/.env/bin/activate')
-    #     time.sleep(3)
-    # else:
-    #     print(" Algo VPN '.env' doesn't exist, creating...")
-    #     time.sleep(3)
-    #     os.system('python3 -m virtualenv --python="$(command -v python3)" backend/algo/.env && \
-    #               source backend/algo/.env/bin/activate && \
-    #               python3 -m pip install -r backend/algo/requirements.txt && \
-    #               python3 -m pip install -r requirements.txt')
-    #     time.sleep(3)
-"""
-
+    """
+    # This set of code needs to be fixed, the implementation to automated virtualenv doesn't work correctly.
+        # print("Checking for the Algo VPN '.env' folder...")
+        # time.sleep(2)
+        # if os.path.isdir('backend/algo/.env') is True:
+        #     print("Algo VPN '.env already exists!")
+        #     os.system('source backend/algo/.env/bin/activate')
+        #     time.sleep(3)
+        # else:
+        #     print(" Algo VPN '.env' doesn't exist, creating...")
+        #     time.sleep(3)
+        #     os.system('python3 -m virtualenv --python="$(command -v python3)" backend/algo/.env && \
+        #               source backend/algo/.env/bin/activate && \
+        #               python3 -m pip install -r backend/algo/requirements.txt && \
+        #               python3 -m pip install -r requirements.txt')
+        #     time.sleep(3)
+    """
+    # Read personnel from Google Sheets Manifest
+    MANIFEST = read_spreadsheet(SHEETS, MANIFEST_ID)
+    # Add manifest's personnel information to Algo config.cfg file 
+    add_manifest_personnel_to_algo_config(MANIFEST, CONFIG_PATH)
     # Deploy algo server
     print("Deploying new algo server (est time to completion: 15 minutes)")
     time.sleep(3)
