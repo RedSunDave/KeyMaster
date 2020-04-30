@@ -1,4 +1,4 @@
-#!.venv/bin/python3
+#!backend/algo/.env/bin/python3
 """
 Code Written by David Foran - Red Sun Information Systems Corporation
 
@@ -58,24 +58,27 @@ if __name__ == "__main__":
         shutil.rmtree('algo/')
         os.system('git clone https://github.com/trailofbits/algo.git')
         os.chdir("..")
-        print('Edit the users in the Algo configuration file! Then run "python3 distribute_keys.py" again')
+        print('Edit the users in the Algo configuration file! Dont forget to setup the .env folder and install requirements. Then run "python3 distribute_keys.py" again')
         time.sleep(3)
         sys.exit(0)
 
-    print("Checking for the Algo VPN '.env' folder...")
-    time.sleep(2)
-    if os.path.isdir('backend/algo/.env') is True:
-        print("Algo VPN '.env already exists!")
-        os.system('source backend/algo/.env/bin/activate')
-        time.sleep(3)
-    else:
-        print(" Algo VPN '.env' doesn't exist, creating...")
-        time.sleep(3)
-        os.system('python3 -m virtualenv --python="$(command -v python3)" backend/algo/.env && \
-                  source backend/algo/.env/bin/activate && \
-                  python3 -m pip install -r backend/algo/requirements.txt && \
-                  python3 -m pip install -r requirements.txt')
-        time.sleep(3)
+"""
+# This set of code needs to be fixed, the implementation to automated virtualenv doesn't work correctly.
+    # print("Checking for the Algo VPN '.env' folder...")
+    # time.sleep(2)
+    # if os.path.isdir('backend/algo/.env') is True:
+    #     print("Algo VPN '.env already exists!")
+    #     os.system('source backend/algo/.env/bin/activate')
+    #     time.sleep(3)
+    # else:
+    #     print(" Algo VPN '.env' doesn't exist, creating...")
+    #     time.sleep(3)
+    #     os.system('python3 -m virtualenv --python="$(command -v python3)" backend/algo/.env && \
+    #               source backend/algo/.env/bin/activate && \
+    #               python3 -m pip install -r backend/algo/requirements.txt && \
+    #               python3 -m pip install -r requirements.txt')
+    #     time.sleep(3)
+"""
 
     # Deploy algo server
     print("Deploying new algo server (est time to completion: 15 minutes)")
